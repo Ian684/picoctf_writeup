@@ -1,0 +1,38 @@
+picoctf access control writeup
+
+1.Challenge Analysis:
+
+The challenge provides a smart contract named AccessControl written in Solidity ^0.8.0. The contract contains a state variable owner, a boolean revealed, and functions to manage ownership and retrieve the flag.
+
+Reviewing the changeOwner function:
+function changeOwner(address _newOwner) public {
+    address oldOwner = owner;
+    owner = _newOwner;
+    emit OwnerChanged(oldOwner, _newOwner);
+}
+
+Notice that changeOwner lacks any access control modifier (such as onlyOwner) or authorization check. Any external account can freely call this function to reassign the contract's owner address to themselves.
+
+The solve function requires msg.sender == owner to proceed and set revealed = true:
+function solve() public {
+    require(msg.sender == owner, "Only the owner can get the flag.");
+
+    if (!revealed) {
+        revealed = true;
+        emit FlagRevealed(flag);
+    }
+}
+
+2.Exploitation Steps (access_control.py):
+
+Step 1 (Take Ownership): Call changeOwner(my_address) to overwrite the current owner with your own wallet address, bypassing the missing access control.
+
+Step 2 (Trigger Solution): Call solve(). Since your address is now successfully set as the owner, the require(msg.sender == owner) check passes, setting revealed to true.
+
+Step 3 (Retrieve Flag): Call getFlag() to read the revealed secret flag.
+
+3.Result and Conclusion:
+
+By exploiting the unprotected changeOwner function, unauthorized ownership takeover is achieved, allowing standard contract solver functions to be executed and the flag to be successfully extracted.
+
+4.get flag!
