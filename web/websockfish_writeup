@@ -1,0 +1,15 @@
+picoctf WebSockFish writeup
+
+1.inspect the code and find how the frontend interacts with Stockfish and the WebSocket server (sendMessage("eval ...") or sendMessage("mate ...")).
+
+2.understand that the server listens to the WebSocket messages sent by the client.
+
+3.notice that the server might directly pass or evaluate the input received from the WebSocket message in a backend command execution function.
+
+4.test the WebSocket payload using the browser console to see how the server responds.
+
+5.send a crafted command or shell injection payload via sendMessage("eval -99999") or similar syntax.
+
+6.check the chat response box (#chatText) where the server returns the output.
+
+7.get flag!

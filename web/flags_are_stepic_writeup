@@ -1,0 +1,21 @@
+picoctf flags are stepic writeup
+
+1.Access the challenge page (Country Flags) and inspect the source code and JavaScript array to find a comprehensive list of countries and their corresponding flag image paths.
+
+2.After carefully reviewing the list, identify a fake country that does not exist in reality: Upanzi, Republic The, which corresponds to the image path flags/upz.png.
+
+3.Although the webpage declares and loads a .png extension, inspecting the binary header of the downloaded image reveals that its true format is actually JPEG. Save or rename this downloaded image as aaa.png.
+
+4.Since the image embeds hidden data into the pixel least significant bits (LSB) using the stepic tool, write a Python decoding script to extract and restore the hidden information.
+
+5.Create and run the following Python script to load the image and extract the hidden message:
+
+from PIL import Image
+import stepic
+
+d = stepic.decode(Image.open('aaa.png').convert('RGB'))
+print(d if isinstance(d, str) else d.decode(errors='ignore'))
+
+6.Execute the script to successfully reveal the hidden string embedded within the pixels.
+
+7.Get flag!

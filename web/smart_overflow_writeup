@@ -1,0 +1,35 @@
+picoctf smart_overflow writeup
+
+1.The challenge provides a smart contract named IntOverflowBank written in Solidity ^0.6.12. In versions prior to Solidity 0.8.0, arithmetic operations do not automatically revert on overflow, causing numbers to silently wrap around.
+
+Reviewing the core logic of the deposit function:
+function deposit(uint256 amount) external {
+    uint256 oldBalance = balances[msg.sender];
+    balances[msg.sender] = balances[msg.sender] + amount;
+
+    emit Deposit(msg.sender, amount);
+    if (!revealed && balances[msg.sender] < amount) {
+        revealed = true;
+        emit FlagRevealed(flag);
+    }
+}
+
+2.The condition to reveal the flag is !revealed && balances[msg.sender] < amount. Normally, the new balance after depositing an amount is always greater than or equal to amount; however, by causing an integer overflow, we can make the new balance wrap around to a very small value, satisfying the condition and unlocking the flag.
+
+3.Step 1 (Set Initial Balance): Call deposit(10) to set balances[msg.sender] to 10.
+
+Step 2 (Trigger Integer Overflow): Call deposit(2**256 - 5) again.
+
+Calculation: 10 + (2**256 - 5) = 2**256 + 5.
+
+In uint256 arithmetic, 2**256 + 5 overflows and wraps around to 5.
+
+The new balance balances[msg.sender] becomes 5, which is less than the deposit amount 2**256 - 5.
+
+The condition balances[msg.sender] < amount is met, setting revealed to true.
+
+Step 3 (Retrieve Flag): Call getFlag() to read the revealed flag.
+
+4.Exploit Script (smart_overflow.py)
+
+5.get flag!
