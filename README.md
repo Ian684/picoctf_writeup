@@ -2,9 +2,6 @@
 
 A personal collection of picoCTF writeups, notes, and solve scripts. The repository is organized by challenge category so that each problem can be reviewed independently.
 
-See [INDEX.md](INDEX.md) for category counts and the recommended writeup
-workflow.
-
 ## Repository Structure
 
 ```text
